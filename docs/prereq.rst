@@ -8,8 +8,10 @@ loopback device, which can be obtained respectively from the following three
 projects:
 
 - libuvc-theta_
-- libuvc-theta-sample_
+- libuvc-theta-sample_ (original, but recommend using a :ref:`forked version
+  <libuvc-theta-sample-fork>`)
 - v4l2loopback_
+
 
 These dependencies are shipped as submodules of the ricoh_theta_ros package.
 You don't have to download these code repositories manually, instead run the
@@ -129,7 +131,9 @@ For system using NVIDIA GPUs, hardware acceleration could be achieved by using
 NVIDIA decoder as a plug-in of the GStreamer pipeline. See :doc:`hwaccel` for
 the howto.
 
-A forked `madjxatw/libuvc-theta-sample
+.. _libuvc-theta-sample-fork:
+
+A `forked libuvc-theta-sample
 <https://github.com/madjxatw/libuvc-theta-sample>`_ repo has several branches
 pre-created for different configurations, e.g. the ``nvdec`` branch uses nvdec
 as GStreamer plugin for :doc:`hardware acceleration <hwaccel>`; the ``yv12``

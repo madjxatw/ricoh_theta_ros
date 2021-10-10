@@ -70,16 +70,16 @@ OpenCV Video Capture Support
 ----------------------------
 
 Running the cv_camera node on Ubuntu 18.04 with OpenCV 3.2.0 installed, you will
-encounter an error raising the message:
+encounter an error stating:
 
    VIDEOIO ERROR: V4L2: Pixel format of incoming image is unsupported by OpenCV
 
 This is because the default pixel format of the decoded video output by the
 GStreamer pipeline is ``I420`` (i.e. ``YUV420``) which is not supported by
 OpenCV Video I/O module before 3.4.3 version. All pixel formats supported by
-OpenCV 3.2.0 can be found from `modules/videoio/cap_v4l.cpp
+OpenCV 3.2.0 can be found in `modules/videoio/cap_v4l.cpp
 <https://github.com/opencv/opencv/blob/3.2.0/modules/videoio/src/cap_v4l.cpp>`_,
-here is the code snippet involved:
+the involved code snippet is shown as below:
 
 .. code-block:: cpp
 
@@ -105,7 +105,7 @@ here is the code snippet involved:
                V4L2_PIX_FMT_Y16
        };
 
-The following is the involved snippet from OpenCV `3.4.3
+The same function from OpenCV `3.4.3
 <https://github.com/opencv/opencv/blob/3.4.3/modules/videoio/src/cap_v4l.cpp>`_
 
 .. code-block:: c++
@@ -134,12 +134,12 @@ The following is the involved snippet from OpenCV `3.4.3
                V4L2_PIX_FMT_Y16
        };
 
-The pull request about adding YUV420 to OpenCV 3.4.3 can be found at
+The pull request for adding YUV420 to OpenCV 3.4.3 can be found at
 https://github.com/opencv/opencv/pull/12134
 
 The simplest workaround for this issue is to tweak the GStreamer pipeline to
-have it use ``YVU420`` as pixel format of the decoded video, and this can be
-done by modifying the :file:`gst/gst_viewer.c` source file of
+have it use ``YV12`` (i.e. ``YVU420``) as pixel format for the decoded video,
+and this can be done by modifying :file:`gst/gst_viewer.c` in
 libuvc-theta-sample:
 
 .. code-block:: diff
