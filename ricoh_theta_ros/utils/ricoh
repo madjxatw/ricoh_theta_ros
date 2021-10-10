@@ -1,0 +1,286 @@
+#!/bin/bash
+# ------------------------------------------------------------------------------
+# FILE: ricoh
+#
+# DESCRIPTION: a shell script for RICOH THETA V or Z1 camera contorl based on
+# ptpcam (libptp2).
+#
+# AUTHOR: Minjie Xu <xmj@sjtu.edu.cn>
+#
+# DATE: 09/08/2021
+#
+# VERSION: 0.0.1
+# ------------------------------------------------------------------------------
+#
+# OP CODE
+# 0x1013 = power down
+#
+# DEVICE PROP CODE
+# 0xd802 = auto poweroff sleep delay (0, 1~30 mins for THETA S and SC)
+# 0xd803 = sleep delay (0, 60~65534 secs for THETA V and Z1)
+# 0xd81b = auto poweroff delay (0, 600~2592000 secs)
+# 0x5013 = capture mode
+#
+# CAPTURE MODE VALUE
+# 0x0001 = single-shot shooting
+# 0x0003 = interval shooting
+# 0x8002 = movie shooting
+# 0x8003 = interval composite shooting
+# 0x8004 = multi bracket shooting
+# 0x8005 = live streaming
+# 0x8006 = interval shooting - tripod stablization is off
+#          (top/bottom correction and stiching optimized)
+# 0x8007 = interval shooting - tripod stablization is on
+#
+# Access <https://api.ricoh/docs/theta-usb-api> for more info.
+#
+# TIPS
+# - To list all devices: `ptpcam --list-devices`
+# - To list all operation code: `ptpcam -o`
+# - To list all property code: `ptpcam --list-all-properties`
+# ------------------------------------------------------------------------------
+set -o pipefail
+
+_cmd='ptpcam'
+_verbose=
+
+_usage()
+{
+  cat << EOF
+Usage: ricoh [OPTIONS] COMMAND [ARGS]"
+
+  Control RICOH THETA V and Z1 cameras.
+
+Options:
+  --help            Show usage
+  -v, --verbose     Show extra information
+
+Commands:
+  auoff [0|600-2592000]     Disable auto poweroff (0), or set a auto poweroff
+                            delay in seconds (values from 1 to 599 is assumed as
+                            600).
+                            When no argument is present, show current value.
+  ausleep [0|60-65534]      Disable auto sleep (0), or set a auto sleep delay in
+                            seconds (values from 1 to 59 is assumed as 60).
+                            When no argument is present, show current value.
+  info                      Show device information
+  mode [image|video|live]   Show current mode or set mode when argument is
+                            present
+  poweroff                  Power off camera
+  sleep [0|1]               Wake the camera up or put the camera to sleep
+  status                    Show camera status
+EOF
+}
+
+_get_prop()
+{
+  local val
+  val="$(${_cmd} -v --show-property=$1 2>/dev/null | \
+    awk '/Current value:/{ print $3 }')"
+  echo "${val}"
+}
+
+_set_prop()
+{
+  ${_cmd} --set-property="$1" --val="$2"
+}
+
+_show_sleep()
+{
+  local val
+  local st_str
+  val="$(_get_prop '0xd80e')"
+  case "${val}" in
+    0)
+      printf "status: awake\n"
+      ;;
+    1)
+      printf "status: sleep\n"
+      exit 0
+      ;;
+  esac
+}
+
+_show_mode()
+{
+  local val
+  local mode_str
+
+  val="$(_get_prop '0x5013')"
+
+  case "${val}" in
+    0x0001)
+      mode_str='still image shooting'
+      ;;
+    0x8002)
+      mode_str='movie shooting'
+      ;;
+    0x8005)
+      mode_str='live streaming'
+      ;;
+    '')
+      mode_str='N/A'
+      ;;
+    *)
+      mode_str="${val}"
+      ;;
+  esac
+
+  printf "Capture mode: ${mode_str}\n"
+}
+
+_show_auto_sleep_delay()
+{
+  local val
+
+  val="$(_get_prop '0xd803')"
+  printf "Auto sleep delay: ${val:-N/A} secs\n"
+}
+
+_show_auto_off_delay()
+{
+  local val
+
+  val="$(_get_prop '0xd81b')"
+  printf "Auto poweroff: ${val:-N/A} secs\n"
+}
+
+_status()
+{
+  _show_sleep
+  _show_mode
+  _show_auto_sleep_delay
+  _show_auto_off_delay
+}
+
+_set_mode()
+{
+  local val
+
+  case "$1" in
+    image)
+      val=0x0001;;
+    live)
+      val=0x8005;;
+    video)
+      val=0x8002;;
+    *)
+      printf "$1: unspported mode"
+      exit 1
+      ;;
+  esac
+
+  _set_prop '0x5013', "${val}"
+}
+
+_sleep()
+{
+  case "$1" in
+    0|1)
+      _set_prop '0xd80e', "$1"
+      ;;
+    *)
+      ;;
+  esac
+}
+
+_set_auto_off_delay()
+{
+  _set_prop '0xd81b', "$1"
+}
+
+_set_auto_sleep_delay()
+{
+  _set_prop '0xd803', "$1"
+}
+
+_poweroff()
+{
+  ${_cmd} -R 0x1013
+}
+
+_list_devices()
+{
+  ${_cmd} ${_verbose} --list-devices
+}
+
+_device_info()
+{
+  ${_cmd} ${_verbose} --info
+}
+
+main()
+{
+  if ! command -v "${_cmd}" >/dev/null 2>&1; then
+    printf "${_cmd} is not available\n"
+    exit 1
+  fi
+
+  args=$(getopt -o 'hv' -l 'help,verbose' -- "$@")
+  eval set -- "${args}"
+
+  while true; do
+    case "$1" in
+      -h|--help)
+        _usage
+        exit 0
+        ;;
+      -v|--verbose)
+        _verbose=$1
+        shift
+        ;;
+      --)
+        shift
+        break
+        ;;
+    esac
+  done
+
+  local op="$1"
+  shift
+
+  case "${op}" in
+    info)
+      _device_info
+      ;;
+    mode)
+      if [ $# -eq 0 ]; then
+        _show_mode
+      else
+        _set_mode "$1"
+      fi
+      ;;
+    auoff)
+      if [ $# -eq 0 ]; then
+        _show_auto_off_delay
+      else
+        _set_auto_off_delay "$1"
+      fi
+      ;;
+    ausleep)
+      if [ $# -eq 0 ]; then
+        _show_auto_sleep_delay
+      else
+        _set_auto_sleep_delay "$1"
+      fi
+      ;;
+    poweroff)
+      _poweroff
+      ;;
+    sleep)
+      _sleep "${1:-1}"
+      ;;
+    status)
+      _status
+      ;;
+    wake)
+      _sleep 0
+      ;;
+   *)
+      _usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

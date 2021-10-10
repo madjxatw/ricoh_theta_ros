@@ -1,0 +1,16 @@
+[submodule "deps/libuvc-theta"]
+	path = deps/libuvc-theta
+	url = https://github.com/ricohapi/libuvc-theta
+	branch = theta_uvc
+[submodule "deps/libuvc-theta-sample"]
+	path = deps/libuvc-theta-sample
+	url = https://github.com/codetricity/libuvc-theta-sample.git
+	branch = master
+[submodule "deps/v4l2loopback"]
+	path = deps/v4l2loopback
+	url = https://github.com/umlaeute/v4l2loopback.git
+	branch = main
+[submodule "deps/libptp"]
+	path = deps/libptp
+	url = https://github.com/leirf/libptp.git
+	branch = master
