@@ -13,10 +13,10 @@ which can be obtained from the following projects respectively.
 - [v4l2loopback](https://github.com/umlaeute/v4l2loopback)
 
 The libuvc-theta-sample repo given above is a fork of the original containing
-several pre-created branches specific to different configurations For example,
+several pre-created branches specific to different configurations. For example,
 the `nvdec` branch uses NVIDIA decoder instead of the open source one; the
 `yv12` branch sets the pixel format for the decoded video to YVU420; the
-`nvidia-yv12` branch combines the previous two. Check out the branch that
+`nvdec-yv12` branch combines the previous two. Check out the branch that
 fits your case, or create a new branch with your own modification.
 
 ricoh_theta_ros adds all mentioned 3rd-party dependencies as Git submodules
@@ -48,7 +48,8 @@ git -C src clone --recursive https://github.com/madjxatw/ricoh_theta_ros.git
 ```
 
 Install any dependencies in the `deps` directory if it is not yet installed.
-Refer to the [documentation] for how to build, install and configure them.
+See the [documentation](#documentation) for how to build, install and configure
+them.
 
 Run
 
@@ -91,7 +92,7 @@ physical buttons, we can use a command line tool bundled with
 THETA USB API](https://api.ricoh/docs/theta-usb-api/) to control the cameras on
 Linux.
 
-ricoh_theta_ros ships the `ricoh_theta_ros/utils/ricoh` script to facilitates
+ricoh_theta_ros ships the `ricoh_theta_ros/utils/ricoh` script that facilitates
 the camera control by wrapping the execution of `ptpcam` into a set of more
 intuitive commands. Copy the `ricoh` script file to a system binary path (e.g.
 `~/.local/bin/` or `/usr/local/bin`) and make sure its executable permission bit
