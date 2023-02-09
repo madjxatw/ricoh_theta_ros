@@ -149,7 +149,7 @@ be built by following the steps below:
    git clone https://github.com/madjxatw/libuvc-theta-sample.git
    cd libuvc-theta-sample/gst
    # On Ubuntu 18.04 (OpenCV v3.2) with nvdec installed
-   checkout nvdec-yv12
+   git checkout nvdec-yv12
    make
 
 A successful build produces two new files:
@@ -207,7 +207,7 @@ that you take hasn't been taken by other devices. For example:
    sudo modprobe v4l2loopback video_nr=2
 
 It is better to have the ``v4l2loopback`` module automatically loaded upon
-system boot. This can done as follows:
+system boot. This can be done as follows:
 
 .. code-block:: sh
 
@@ -221,7 +221,7 @@ cv_camera
 
 Once the system-level driver installation completes, a ROS-level driver is also
 required. The cv_camera_ ROS package has been verified to work with RICOH THETA
-cameras without extra tweaking.
+cameras without extra tweak.
 
 Install cv_camera:
 

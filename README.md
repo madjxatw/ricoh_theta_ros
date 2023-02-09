@@ -65,7 +65,7 @@ Once the build is done successfully, source the workspace setup script depending
 on your shell type, e.g. `</path/to/your/ros/workspace>/devel/setup.bash` for
 bash.
 
-Run the startup script
+Run the startup script:
 
 ```sh
 rosrun ricoh_theta_ros start.sh
@@ -73,12 +73,12 @@ rosrun ricoh_theta_ros start.sh
 
 The `start.sh` script performs:
 
-- Starts all the stuff required to capture the live streaming data from the
+- Starting all the stuff required to capture the live streaming data from the
   camera.
-- Run a launch file that starts `cv_camera` node and remaps the `image_raw`,
+- Running a launch file that starts `cv_camera` node and remaps the `image_raw`,
   `camera_info` and `set_camera_info` topics from `cv_camera` namespace to
   `360cam` namespace.
-- Set up resolution. RICOTH THETA V and Z1 support live streaming in either 4K
+- Setting up resolution. RICOTH THETA V and Z1 support live streaming in either 4K
   (3840x1920) or 2K (1920x960) resolution, `start.sh` sets resolution to 2K to
   reduce latency.
 
@@ -103,9 +103,10 @@ See the [documentation](#documentation) for how to install libptp.
 ## Equirectangular-to-Perspective image conversion
 
 RICOH THETA V1 and Z1 stream stitched 360-degree panorama images in live
-streaming mode via USB, and it is so far not possible to turn off the internal
-stitcher. The [Equirec2Perspec](https://github.com/madjxatw/Equirec2Perspec)
-library can be used to do equirectangular-to-perspective conversion.
+USB streaming mode, and there is so far no way turning off the internal
+stitcher. We use the
+[Equirec2Perspec](https://github.com/madjxatw/Equirec2Perspec) library to do
+equirectangular-to-perspective conversion.
 
 ricoh_theta_ros has integrated Equirec2Perspec as a ROS catkin package named
 **equirec2perspec** (all lowercase), hence you don't have to install it
