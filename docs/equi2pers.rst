@@ -70,7 +70,7 @@ Once installed, it could be imported in CMake by doing:
 .. note::
 
    The original CMake pacakge is named ``Equirec2Perspec`` whereas the
-   rioch_theta_integrated package is named ``equirec2persepc``.
+   integrated package is named ``equirec2persepc``.
 
 
 Use Cases
@@ -87,7 +87,7 @@ A brief use case:
    const int height = 720;
    const int width = 1080;
 
-   // z-axis angle (0: forward, 180: backword)
+   // z-axis angle (0: forward, 180: backward)
    float theta = 180.0f;
 
    // y-axis angle (>0: upper, <0: lower)
