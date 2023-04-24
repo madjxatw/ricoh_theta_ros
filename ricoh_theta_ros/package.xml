@@ -10,4 +10,6 @@
   <license>TODO</license>
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>cv_camera</exec_depend>
+  <doc_depend>python3-sphinx</doc_depend>
+  <doc_depend>python3-sphinx-rtd-theme</doc_depend>
 </package>
